@@ -47,29 +47,35 @@ def calculate_r_squared(x, y, theta_0, theta_1):
 	r_squared = 1 - (ssr / sst)
 	return r_squared
 
+def calculate_mse(y, y_pred):
+    return np.mean((y - y_pred) ** 2)
+
+def calculate_rmse(mse):
+    return np.sqrt(mse)
+
 def plot_regression_and_cost(x, y, theta_0, theta_1, x_min, x_max, cost_history):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+	fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
-    denormalized_theta_1 = theta_1 / (x_max - x_min)
-    denormalized_theta_0 = theta_0 - denormalized_theta_1 * x_min
+	denormalized_theta_1 = theta_1 / (x_max - x_min)
+	denormalized_theta_0 = theta_0 - denormalized_theta_1 * x_min
 
-    ax1.scatter(x, y, color='blue', label='Original data')
+	ax1.scatter(x, y, color='blue', label='Original data')
 
-    regression_line = denormalized_theta_0 + denormalized_theta_1 * x
-    ax1.plot(x, regression_line, color='green', label='Linear regression')
+	regression_line = denormalized_theta_0 + denormalized_theta_1 * x
+	ax1.plot(x, regression_line, color='green', label='Linear regression')
 
-    ax1.set_xlabel('Mileage')
-    ax1.set_ylabel('Price')
-    ax1.set_title('Mileage vs Price with Linear Regression')
-    ax1.legend()
+	ax1.set_xlabel('Mileage')
+	ax1.set_ylabel('Price')
+	ax1.set_title('Mileage vs Price with Linear Regression')
+	ax1.legend()
 
-    ax2.plot(range(len(cost_history)), cost_history, color='green')
-    ax2.set_xlabel('Iteration')
-    ax2.set_ylabel('Cost')
-    ax2.set_title('Cost Function History')
+	ax2.plot(range(len(cost_history)), cost_history, color='green')
+	ax2.set_xlabel('Iteration')
+	ax2.set_ylabel('MSE')
+	ax2.set_title('Mean Squared Error over Iteration')
 
-    plt.tight_layout()
-    plt.show()
+	plt.tight_layout()
+	plt.show()
 
 def main():
 	x, y = load_data()
@@ -77,13 +83,20 @@ def main():
 
 	theta_0, theta_1, cost_history = gradient_descent(x_normalized, y)
 	save_coefficients(theta_0, theta_1, x_min, x_max)
+
+	y_pred = theta_0 + theta_1 * x_normalized
 	r_squared = calculate_r_squared(x_normalized, y, theta_0, theta_1)
+	mse = calculate_mse(y, y_pred)
+	rmse = calculate_rmse(mse)
 
 	print(f"theta_0: {theta_0}")
 	print(f"theta_1: {theta_1}")
 	print(f"R²: {r_squared}")
+	print(f"MSE: {mse}")
+	print(f"RMSE: {rmse}")
 
 	plot_regression_and_cost(x, y, theta_0, theta_1, x_min, x_max, cost_history)
+
 
 if __name__ == "__main__":
 	main()
